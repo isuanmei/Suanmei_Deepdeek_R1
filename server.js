@@ -5,6 +5,9 @@ const fetch = require('node-fetch');
 const dotenv = require('dotenv');
 const path = require('path');
 
+// 加载环境变量
+dotenv.config();
+
 // 初始化应用
 const app = express();
 
@@ -14,8 +17,8 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // 配置API密钥
-const API_KEY = '5c1e0a26-7f02-473a-b708-b754ab6231a2';
-const API_URL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
+const API_KEY = process.env.API_KEY;
+const API_URL = process.env.API_URL;
 
 // 初始化TextDecoder
 const decoder = new TextDecoder();
