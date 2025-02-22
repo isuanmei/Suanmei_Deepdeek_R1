@@ -34,6 +34,13 @@ app.post('/api/chat', async (req, res) => {
         const { messages } = req.body;
         
         // 设置API请求选项
+        if (!API_KEY || !API_URL) {
+            console.error('环境变量未正确配置');
+            console.error('API_KEY:', API_KEY ? '已设置' : '未设置');
+            console.error('API_URL:', API_URL ? '已设置' : '未设置');
+            return res.status(500).json({ error: '服务器配置错误：API配置缺失' });
+        }
+
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
@@ -47,6 +54,16 @@ app.post('/api/chat', async (req, res) => {
                 temperature: 0.6
             })
         });
+
+        if (!response.ok) {
+            console.error('API请求失败:', response.status, response.statusText);
+            const errorText = await response.text();
+            console.error('错误详情:', errorText);
+            return res.status(response.status).json({ 
+                error: '与AI服务通信失败',
+                details: errorText
+            });
+        }
 
         // 设置SSE响应头
         res.setHeader('Content-Type', 'text/event-stream');
