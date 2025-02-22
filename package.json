@@ -1,0 +1,15 @@
+{
+  "name": "ai-chat-assistant",
+  "version": "1.0.0",
+  "description": "基于火山方舟DeepSeek R1 API的个性化AI对话网站",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "node-fetch": "^2.7.0"
+  }
+}
