@@ -14,7 +14,12 @@ const app = express();
 // 配置CORS和请求体解析
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 添加根路由处理
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // 配置API密钥
 const API_KEY = process.env.API_KEY;
@@ -83,6 +88,8 @@ app.post('/api/chat', async (req, res) => {
         });
     } catch (error) {
         console.error('Error:', error);
+        console.error('API_KEY:', API_KEY ? '已设置' : '未设置');
+        console.error('API_URL:', API_URL ? '已设置' : '未设置');
         res.status(500).json({ error: '服务器内部错误' });
     }
 });
