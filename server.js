@@ -22,8 +22,15 @@ app.get('/', (req, res) => {
 });
 
 // 配置API密钥
-const API_KEY = process.env.API_KEY;
-const API_URL = process.env.API_URL;
+const API_KEY = process.env.VOLC_API_KEY;
+const API_URL = process.env.VOLC_API_URL;
+
+// 记录环境变量状态
+console.log('环境变量配置状态：', {
+    VOLC_API_KEY: process.env.VOLC_API_KEY ? '已设置' : '未设置',
+    VOLC_API_URL: process.env.VOLC_API_URL ? '已设置' : '未设置',
+    NODE_ENV: process.env.NODE_ENV || 'development'
+});
 
 // 初始化TextDecoder
 const decoder = new TextDecoder();
@@ -33,12 +40,22 @@ app.post('/api/chat', async (req, res) => {
     try {
         const { messages } = req.body;
         
-        // 设置API请求选项
+        // 验证请求体
+        if (!messages || !Array.isArray(messages) || messages.length === 0) {
+            console.error('无效的请求体:', req.body);
+            return res.status(400).json({ error: '无效的请求格式' });
+        }
+
+        // 验证环境变量
         if (!API_KEY || !API_URL) {
-            console.error('环境变量未正确配置');
-            console.error('API_KEY:', API_KEY ? '已设置' : '未设置');
-            console.error('API_URL:', API_URL ? '已设置' : '未设置');
-            return res.status(500).json({ error: '服务器配置错误：API配置缺失' });
+            console.error('环境变量配置状态:');
+            console.error('- API_KEY:', API_KEY ? '已设置' : '未设置');
+            console.error('- API_URL:', API_URL ? '已设置' : '未设置');
+            console.error('- NODE_ENV:', process.env.NODE_ENV);
+            return res.status(500).json({ 
+                error: '服务器配置错误：API配置缺失',
+                env: process.env.NODE_ENV || 'unknown'
+            });
         }
 
         const response = await fetch(API_URL, {
